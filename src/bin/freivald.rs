@@ -7,17 +7,22 @@ use rand::Rng;
 use rand::rngs::ThreadRng;
 
 use ark_std::UniformRand;
-use ark_ff::{Field};
-use ark_bls12_381::Fq2 as F;
+use ark_ff::{Field,One};
 
 use ndarray::{Array,Array1,Array2,Dimension};
 
-// Dimension of vectors and arrays
-const N: usize = 64;
+// Underlying finite field
+use pazk::small_fields::F5 as F;
+const FIELD_NAME: &str = "F5";
+
+// Dimension of vectors and matrices
+const N: usize = 2;
 
 fn main() {
     let mut rng = rand::thread_rng();
     let mut r: F;
+
+    println!("Running Freivald's algorithm over field {}", FIELD_NAME);
 
     // generate random A and B
     print!("Generating random {}x{} matrices A and B ... ", N, N);
@@ -41,10 +46,10 @@ fn main() {
     println!("{}", freivald_check(&a, &b, &c, &r));
 
     // test with C = A*B modified by a single entry
-    print!("Testing with C = A*B but one entry randomized ... ");
+    print!("Testing with C = A*B but one entry modified ... ");
 
     let (u, v): (usize, usize) = (rng.gen_range(0..N), rng.gen_range(0..N));
-    c[(u,v)] = F::rand(&mut rng);
+    c[(u,v)] = c[(u,v)] + F::one();
     r = F::rand(&mut rng);
     println!("{}", freivald_check(&a, &b, &c, &r));
 
@@ -67,7 +72,7 @@ fn freivald_check<T: Field> (a: &Array2<T>, b: &Array2<T>, c: &Array2<T>, r: &T)
     let test_product = c.dot(&test_vector);
     let actual_product = a.dot(&b.dot(&test_vector));
 
-    Decision::from_bool(test_product == actual_product)
+    Decision(test_product == actual_product)
 }
 
 fn fill_random<T: Field, D: Dimension> (arr: &mut Array<T, D>, rng: &mut ThreadRng) {
@@ -76,26 +81,10 @@ fn fill_random<T: Field, D: Dimension> (arr: &mut Array<T, D>, rng: &mut ThreadR
     }
 }
 
-enum Decision {
-    Accept,
-    Reject,
-}
-
-impl Decision {
-    fn from_bool(b: bool) -> Decision {
-        if b { Decision::Accept } else { Decision::Reject }
-    }
-}
+struct Decision(bool);
 
 impl fmt::Display for Decision {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Decision::Accept => {
-                write!(f, "Accept")
-            }
-            Decision::Reject => {
-                write!(f, "Reject")
-            }
-        }
+        if self.0 { write!(f, "Accept") } else { write!(f, "Reject") }
     }
 }
