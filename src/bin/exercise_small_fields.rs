@@ -21,10 +21,10 @@ fn main() {
     for e in 2..10u64 {
         println!("  g^{}:         {}", e, sf::to_u64(g.pow([e])));
     }
-    let two: F = sf::from_u64(2);
+    let two: F = F::from(2);
     println!("  2:           {}", sf::to_u64(two));
     println!("  1+1:         {}", sf::to_u64(one+one));
-    let three: F = sf::from_u64(3);
+    let three: F = F::from(3);
     println!("  3:           {}", sf::to_u64(three));
     println!("  2+1:         {}", sf::to_u64(two+one));
     println!("  3+0:         {}", sf::to_u64(three+zero));

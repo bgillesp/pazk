@@ -128,11 +128,6 @@ impl FpParameters for F251Parameters {
 }
 impl Fp64Parameters for F251Parameters {}
 
-pub fn from_u64<T: Fp64Parameters> (n: u64) -> Fp64<T> {
-    let n_mod = n % bigint64_value(&T::MODULUS);
-    Fp64::<T>::from_repr(BigInteger64::new([n_mod])).unwrap()
-}
-
 pub fn to_u64<T: Fp64Parameters> (n: Fp64<T>) -> u64 {
     bigint64_value(&n.into_repr())
 }
