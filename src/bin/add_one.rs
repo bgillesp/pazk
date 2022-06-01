@@ -2,19 +2,20 @@ use rand;
 
 use std::fmt;
 use pazk::ip;
-use pazk::ip::{IP, Role};
-use pazk::ip::channel::{Channel};
+use pazk::ip::{IP,Channel,Log};
 
 fn main() {
     let n = rand::random::<u8>();
     println!("Random value: {}", n);
 
-    println!("\nPrescribed prover transcript:");
+    println!("\nPrescribed prover");
+    println!(  "=================");
     let good_prover = Add1Prover {};
     let verifier = Add1Verifier{ n };
     ip::execute(good_prover, verifier);
 
-    println!("\nRandom prover transcript:");
+    println!("\nRandom prover");
+    println!(  "=============");
     let bad_prover = RandomProver {};
     let verifier = Add1Verifier{ n };
     ip::execute(bad_prover, verifier);
@@ -54,9 +55,14 @@ impl fmt::Display for Data {
 struct Add1Prover {}
 
 impl IP<Data> for Add1Prover {
-    fn execute(&self, ch: Channel<Data, Role>) {
+    fn execute(&self, ch: Channel<Data>, log: Log) {
         let n = ch.receive().to_number().unwrap();
-        ch.send(Data::Number(n.wrapping_add(1)));
+
+        log.write("P computes m = n+1".to_string());
+        let m = n.wrapping_add(1);
+
+        log.write(format!("P --> (m={})", m));
+        ch.send(Data::Number(m));
     }
 }
 
@@ -65,11 +71,18 @@ struct Add1Verifier {
 }
 
 impl IP<Data> for Add1Verifier {
-    fn execute(&self, ch: Channel<Data, Role>) {
+    fn execute(&self, ch: Channel<Data>, log: Log) {
+        log.write(format!("V starts with value n={}", self.n));
+
+        log.write(format!("V --> (n={})", self.n));
         ch.send(Data::Number(self.n));
 
-        let n_plus_one = ch.receive().to_number().unwrap();
-        let decision = Data::Decision(n_plus_one == self.n.wrapping_add(1));
+        let m = ch.receive().to_number().unwrap();
+
+        log.write(format!("V checks m == n+1"));
+        let decision = Data::Decision(m == self.n.wrapping_add(1));
+
+        log.write(format!("V --> ({})", decision));
         ch.send(decision);
     }
 }
@@ -77,9 +90,13 @@ impl IP<Data> for Add1Verifier {
 struct RandomProver {}
 
 impl IP<Data> for RandomProver {
-    fn execute(&self, ch: Channel<Data, Role>) {
+    fn execute(&self, ch: Channel<Data>, log: Log) {
         let _ = ch.receive();
+
         let m = rand::random::<u8>();
+        log.write("P picks m uniformly at random".to_string());
+
+        log.write(format!("P --> (m={})", m));
         ch.send(Data::Number(m));
     }
 }
