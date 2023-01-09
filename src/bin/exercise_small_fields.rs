@@ -1,13 +1,13 @@
 use ark_ff::{Zero,One};
-use ark_ff::fields::{Field,PrimeField,FpParameters,FftField,FftParameters};
+use ark_ff::fields::{Field,PrimeField,FftField};
 
 use pazk::small_fields as sf;
-use pazk::small_fields::{F13 as F, F13Parameters as FieldParameters};
+use pazk::small_fields::F13 as F;
 
 fn main() {
-    println!("Exercising field F_{} with generator {}",
-        FieldParameters::MODULUS.as_ref()[0],
-        sf::to_u64(F::multiplicative_generator()),
+    println!("Exercising prime field F with modulus {} and generator {}",
+        F::MODULUS.as_ref()[0],
+        sf::to_u64(F::GENERATOR),
     );
 
     println!("\nField computations:");
@@ -16,7 +16,7 @@ fn main() {
     let one = F::one();
     println!("  1:           {}", sf::to_u64(one));
     println!(" -1:           {}", sf::to_u64(-one));
-    let g = F::multiplicative_generator();
+    let g = F::GENERATOR;
     println!("  g:           {}", sf::to_u64(g));
     for e in 2..10u64 {
         println!("  g^{}:         {}", e, sf::to_u64(g.pow([e])));
@@ -29,28 +29,23 @@ fn main() {
     println!("  2+1:         {}", sf::to_u64(two+one));
     println!("  3+0:         {}", sf::to_u64(three+zero));
 
-    println!("\nConfig params:");
-    println!("  Fp::MODULUS = {}", FieldParameters::MODULUS.as_ref()[0]);
-    println!("  Fp::MODULUS_MINUS_ONE_DIV_TWO = {}", FieldParameters::MODULUS_MINUS_ONE_DIV_TWO.as_ref()[0]);
-    println!("  Fp::GENERATOR = {}", FieldParameters::GENERATOR);
-    println!("  Fp::R = {}", FieldParameters::R.as_ref()[0]);
-    println!("  Fp::R2 = {}", FieldParameters::R2.as_ref()[0]);
-    println!("  Fp::INV = {}", FieldParameters::INV);
-    println!("  Fp::MODULUS_BITS = {}", FieldParameters::MODULUS_BITS);
-    println!("  Fp::CAPACITY = {}", FieldParameters::CAPACITY);
-    println!("  Fp::REPR_SHAVE_BITS = {}", FieldParameters::REPR_SHAVE_BITS);
-    println!("  Fp::T = {}", FieldParameters::T.as_ref()[0]);
-    println!("  Fp::T_MINUS_ONE_DIV_TWO = {}", FieldParameters::T_MINUS_ONE_DIV_TWO.as_ref()[0]);
-    println!("  Fft::TWO_ADICITY = {}", FieldParameters::TWO_ADICITY);
-    println!("  Fft::TWO_ADIC_ROOT_OF_UNITY = {}", FieldParameters::TWO_ADIC_ROOT_OF_UNITY);
-    println!("  Fft::SMALL_SUBGROUP_BASE = {:?}", FieldParameters::SMALL_SUBGROUP_BASE);
-    println!("  Fft::SMALL_SUBGROUP_BASE_ADICITY = {:?}", FieldParameters::SMALL_SUBGROUP_BASE_ADICITY);
-    println!("  Fft::LARGE_SUBGROUP_ROOT_OF_UNITY = {:?}", FieldParameters::LARGE_SUBGROUP_ROOT_OF_UNITY);
+    println!("\nPrimeField params:");
+    println!("  F::MODULUS = {}", F::MODULUS.as_ref()[0]);
+    println!("  F::MODULUS_MINUS_ONE_DIV_TWO = {}", F::MODULUS_MINUS_ONE_DIV_TWO.as_ref()[0]);
+    println!("  F::MODULUS_BIT_SIZE = {}", F::MODULUS_BIT_SIZE);
+    println!("  F::TRACE = {}", F::TRACE);
+    println!("  F::TRACE_MINUS_ONE_DIV_TWO = {}", F::TRACE_MINUS_ONE_DIV_TWO);
 
-    println!("\nCalculated params:");
-    println!("  Modulus minus one divided by two: {}", F::modulus_minus_one_div_two());
-    println!("  Trace: {}", F::trace());
-    println!("  QNR^T: {}", sf::to_u64(F::qnr_to_t()));
-    println!("  Size in bits: {}", F::size_in_bits());
-    println!("  Two-adic root of unity: {}", sf::to_u64(F::two_adic_root_of_unity()));
+    println!("\nFftField params:");
+    println!("  F::GENERATOR = {}", F::GENERATOR);
+    println!("  F::TWO_ADICITY = {}", F::TWO_ADICITY);
+    println!("  F::TWO_ADIC_ROOT_OF_UNITY = {}", F::TWO_ADIC_ROOT_OF_UNITY);
+    println!("  F::SMALL_SUBGROUP_BASE = {:?}", F::SMALL_SUBGROUP_BASE);
+    println!("  F::SMALL_SUBGROUP_BASE_ADICITY = {:?}", F::SMALL_SUBGROUP_BASE_ADICITY);
+    println!("  F::LARGE_SUBGROUP_ROOT_OF_UNITY = {:?}", F::LARGE_SUBGROUP_ROOT_OF_UNITY);
+
+    println!("\nMontConfig params:");
+    println!("  F::R = {}", F::R.as_ref()[0]);
+    println!("  F::R2 = {}", F::R2.as_ref()[0]);
+    println!("  F::INV = {}", F::INV);
 }

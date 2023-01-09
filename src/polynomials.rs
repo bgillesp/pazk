@@ -2,9 +2,9 @@ use std::cmp;
 use std::iter::Iterator;
 
 use ark_ff::Zero;
-use ark_ff::fields::{Field,Fp64,Fp64Parameters};
+use ark_ff::fields::{Field,Fp64,FpConfig};
 
-use ark_poly::{Polynomial,MVPolynomial};
+use ark_poly::{Polynomial,DenseMVPolynomial};
 use ark_poly::polynomial::multivariate::SparsePolynomial as MultiPoly;
 use ark_poly::polynomial::multivariate::{Term,SparseTerm};
 use ark_poly::polynomial::univariate::DensePolynomial as UniPoly;
@@ -12,7 +12,7 @@ use ark_poly::polynomial::univariate::DensePolynomial as UniPoly;
 use crate::small_fields;
 
 
-pub fn format_univ_poly<T: Fp64Parameters>(poly: &UniPoly<Fp64<T>>, varname: &str) -> String {
+pub fn format_univ_poly<T: FpConfig<1>>(poly: &UniPoly<Fp64<T>>, varname: &str) -> String {
     if poly.coeffs.len() == 0 || !poly.coeffs.iter().any(|coeff| *coeff != Fp64::zero()) {
         String::from("0")
     } else {
@@ -143,7 +143,7 @@ pub fn variable_degrees<F: Field>(poly: &MultiPoly<F, SparseTerm>) -> Vec<usize>
 }
 
 /// Construct a multivariate polynomial over a 64-bit field using u64 coefficients and Vec monomials.
-pub fn construct_poly<T: Fp64Parameters>(num_vars: usize, spec: Vec<(u64, Vec<(usize, usize)>)>) -> MultiPoly<Fp64<T>, SparseTerm> {
+pub fn construct_poly<T: FpConfig<1>>(num_vars: usize, spec: Vec<(u64, Vec<(usize, usize)>)>) -> MultiPoly<Fp64<T>, SparseTerm> {
     let terms: Vec<(Fp64<T>, SparseTerm)> = spec
         .into_iter()
         .map(|(coeff, monom)| {
@@ -153,7 +153,7 @@ pub fn construct_poly<T: Fp64Parameters>(num_vars: usize, spec: Vec<(u64, Vec<(u
     MultiPoly::from_coefficients_vec(num_vars, terms)
 }
 
-pub fn construct_const_poly<T: Fp64Parameters>(num_vars: usize, value: u64) -> MultiPoly<Fp64<T>, SparseTerm> {
+pub fn construct_const_poly<T: FpConfig<1>>(num_vars: usize, value: u64) -> MultiPoly<Fp64<T>, SparseTerm> {
     MultiPoly::from_coefficients_vec(
         num_vars,
         vec![(Fp64::from(value), SparseTerm::new(vec![]))]

@@ -3,12 +3,10 @@ name = "pazk"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-ark-ff = "0.3"
-ark-poly = "0.3"
-ark-std = "0.3"
-ark-bls12-381 = "0.3"
+ark-std = { git = "https://github.com/arkworks-rs/std", tag = "v0.4.0-alpha"}
+ark-ff = { git = "https://github.com/arkworks-rs/algebra", tag = "0.4.0-alpha.7"}
+ark-poly = { git = "https://github.com/arkworks-rs/algebra", tag = "0.4.0-alpha.7"}
+ark-test-curves = { git = "https://github.com/arkworks-rs/algebra", tag = "0.4.0-alpha.7"}
 ndarray = "0.15.4"
 rand = "0.8.5"
