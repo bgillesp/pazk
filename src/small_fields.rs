@@ -14,6 +14,12 @@ pub struct F13Config {}
 pub type F13 = Fp64<MontBackend<F13Config, 1>>;
 
 #[derive(MontConfig)]
+#[modulus="17"]
+#[generator="3"]
+pub struct F17Config {}
+pub type F17 = Fp64<MontBackend<F17Config, 1>>;
+
+#[derive(MontConfig)]
 #[modulus="251"]
 #[generator="6"]
 pub struct F251Config {}
