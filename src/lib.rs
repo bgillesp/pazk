@@ -9,3 +9,6 @@ pub use self::small_curves::*;
 
 pub mod polynomials;
 pub use self::polynomials::*;
+
+pub mod group_utils;
+pub use self::group_utils::*;
