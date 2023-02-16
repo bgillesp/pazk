@@ -1,4 +1,5 @@
 use std::iter::zip;
+use std::fmt;
 use rand::Rng;
 
 use ark_ec::Group;
@@ -23,6 +24,13 @@ pub fn multi_exponent<G: Group>(gens: &Vec<G>, coeffs: &Vec<G::ScalarField>) -> 
 	zip(gens.iter(), coeffs.iter())
 		.map(|(&x, &y)| x * y)
 		.fold(G::zero(), |acc, x| acc + x)
+}
+
+pub fn list_vec<T: fmt::Display>(vec: &Vec<T>) -> String {
+	vec.iter()
+		.map(|x| x.to_string())
+		.collect::<Vec<_>>()
+		.join(" ")
 }
 
 
