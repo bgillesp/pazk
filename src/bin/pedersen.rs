@@ -5,13 +5,13 @@ use ark_ec::Group;
 
 use pazk::small_curves::C17Projective as G;
 
-use pazk::group_utils::*;
+use pazk::group_utils;
 
 fn main() {
 	let mut rng = rand::thread_rng();
     let n: usize = 3;
 
-    let gens: Vec<G> = rand_gens(n, &mut rng);
+    let gens: Vec<G> = group_utils::rand_gens(n, &mut rng);
     println!("Generators:");
     for g in &gens {
     	println!("{g}");
@@ -23,7 +23,7 @@ fn main() {
 		println!("{d}");
     }
 
-    let commitment: G = multi_exponent(&gens, &data);
+    let commitment: G = group_utils::msm(&gens, &data);
     println!("\nCommitment:");
     let terms: Vec<String> = zip(gens.iter(), data.iter())
     		.map(|(g, d)| format!("{}*{}", d.to_string(), g.to_string()))

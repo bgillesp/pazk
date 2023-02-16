@@ -1,8 +1,9 @@
-use std::iter::zip;
 use std::fmt;
 use rand::Rng;
 
 use ark_ec::Group;
+use std::ops::{Add, Mul};
+use ark_std::Zero;
 
 
 /// Produces a Vec containing n distinct generators chosen uniformly from G
@@ -17,20 +18,23 @@ pub fn rand_gens<G: Group>(n: usize, rng: &mut impl Rng) -> Vec<G> {
 	gens
 }
 
-/// Computes the multi-exponential produced by raising the given list of generators
-/// to the exponents specified by the given list of coefficients
-pub fn multi_exponent<G: Group>(gens: &Vec<G>, coeffs: &Vec<G::ScalarField>) -> G {
-	// TODO implement a more efficient algorithm like Pippenger
-	zip(gens.iter(), coeffs.iter())
+/// Computes the multi-scalar multiplication of the given elements with given
+///  produced by raising the given list of generators
+pub fn msm<E, S>(elts: &[E], scalars: &[S]) -> E where
+	E: Zero + Add<E, Output=E> + Mul<S, Output=E> + Copy,
+	S: Copy,
+{
+	elts.iter().zip(scalars.iter())
 		.map(|(&x, &y)| x * y)
-		.fold(G::zero(), |acc, x| acc + x)
+		.fold(E::zero(), |acc, x| acc + x)
+	// TODO implement a more efficient algorithm like Pippenger
 }
 
-pub fn list_vec<T: fmt::Display>(vec: &Vec<T>) -> String {
+pub fn list_vec<T: fmt::Display>(vec: &[T], sep: &str) -> String {
 	vec.iter()
 		.map(|x| x.to_string())
 		.collect::<Vec<_>>()
-		.join(" ")
+		.join(sep)
 }
 
 

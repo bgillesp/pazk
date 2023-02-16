@@ -40,7 +40,7 @@ fn main() {
     	scalar_gen: g,
 		blinding_gen: h,
     };
-    println!("  Vector generators g_i: {}", group_utils::list_vec(&gens.vector_gens));
+    println!("  Vector generators g_i: {}", group_utils::list_vec(&gens.vector_gens, " "));
     println!("  Scalar generator g: {}", gens.scalar_gen);
     println!("  Blinding generator h: {}", gens.blinding_gen);
 
@@ -53,12 +53,12 @@ fn main() {
     	iter::successors(Some(F::one()), |m| Some(m * &eval_point))
 		.take(deg+1)
 		.collect();
-	println!("Computing vector y of powers of z: {}", group_utils::list_vec(&monoms));
+	println!("Computing vector y of powers of z: {}", group_utils::list_vec(&monoms, " "));
 
     // construct polynomial coefficients and compute evaluation at random point
 
 	let poly_coeffs: Vec<F> = (0..=deg).map(|_| F::rand(&mut rng)).collect();
-	println!("Picking vector u of random polynomial coefficients: {}", group_utils::list_vec(&poly_coeffs));
+	println!("Picking vector u of random polynomial coefficients: {}", group_utils::list_vec(&poly_coeffs, " "));
 
 	let evaluation: F = iter::zip(poly_coeffs.iter(), monoms.iter())
 		.map(|(a, y)| a*y)
@@ -69,7 +69,7 @@ fn main() {
 
 	println!("Computing generalized Pedersen commitment for polynomial coefficients");
 	let rand_u = F::rand(&mut rng);
-	let com_u = group_utils::multi_exponent(&gens.vector_gens, &poly_coeffs)
+	let com_u = group_utils::msm(&gens.vector_gens, &poly_coeffs)
 		+ (gens.blinding_gen * rand_u);
 	println!("  r_u = {rand_u}; C_u = Com(u, r_u) = {com_u}");
 
@@ -137,11 +137,11 @@ impl IP<Data> for PedersenProver {
 
    		log.write(format!("P picks vector d of field elements uniformly at random"));
     	let d: Vec<F> = (0..vec_len).map(|_| F::rand(&mut rng)).collect();
-		log.write(format!("  d = {}", group_utils::list_vec(&d)));
+		log.write(format!("  d = {}", group_utils::list_vec(&d, " ")));
 
     	log.write(format!("P computes commitment to d"));
     	let r1 = F::rand(&mut rng);
-    	let com_d = group_utils::multi_exponent(&self.gens.vector_gens, &d)
+    	let com_d = group_utils::msm(&self.gens.vector_gens, &d)
     		+ (self.gens.blinding_gen * r1);
 		log.write(format!("  r1 = {r1}; C_d = Com(d, r1) = {com_d}"));
 
@@ -174,7 +174,7 @@ impl IP<Data> for PedersenProver {
 			.zip(d)
 			.map(|(x, y)| x+y)
 			.collect();
-		log.write(format!("  u' = {}", group_utils::list_vec(&rand_coeffs)));
+		log.write(format!("  u' = {}", group_utils::list_vec(&rand_coeffs, " ")));
 
 		log.write(format!("P computes derived blinding factors of derived commitments for u' and <u',y>"));
 		let rand_blinding_factor = *self.coeffs_blinding_factor * e + r1;
@@ -239,7 +239,7 @@ impl IP<Data> for PedersenVerifier {
 		log.write(format!("  <u',y> = {rand_ip}"));
 
 		log.write(format!("V computes commitments to u' and <u', y> directly"));
-		let com_rc = group_utils::multi_exponent(&self.gens.vector_gens, &rand_coeffs)
+		let com_rc = group_utils::msm(&self.gens.vector_gens, &rand_coeffs)
 			+ (self.gens.blinding_gen * rand_blinding_factor);
 		let com_rc_ip = (self.gens.scalar_gen * rand_ip)
 			+ (self.gens.blinding_gen * rand_ip_blinding_factor);
@@ -297,7 +297,7 @@ impl fmt::Display for Data {
                 write!(f, "{}", small_fields::to_u64(*x))
             }
             Data::Vector(v) => {
-            	write!(f, "{}", group_utils::list_vec(v))
+            	write!(f, "{}", group_utils::list_vec(v, " "))
             }
             Data::Commitment(g) => {
                 write!(f, "{}", g)
