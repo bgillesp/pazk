@@ -30,17 +30,17 @@ fn main() {
     let w = Arc::new(w);
     let h = Arc::new(h);
 
-	println!("Constructing prover P and verifier V with parameters:");
+    println!("Constructing prover P and verifier V with parameters:");
     let prover = SchnorrDLProver {
-    	g: g.clone(),
-    	w: w.clone(),
+        g: g.clone(),
+        w: w.clone(),
     };
-	println!("  P <- (g, w)");
+    println!("  P <- (g, w)");
     let verifier = SchnorrDLVerifier {
-    	g: g.clone(),
-    	h: h.clone(),
+        g: g.clone(),
+        h: h.clone(),
     };
-	println!("  V <- (g, h)");
+    println!("  V <- (g, h)");
 
     println!();
     println!("Begin interactive protocol execution...");
@@ -52,78 +52,78 @@ fn main() {
 // given group element to the base of a given generator
 
 struct SchnorrDLProver {
-	g: Arc< G >,
-	w: Arc< F >,
+    g: Arc< G >,
+    w: Arc< F >,
 }
 
 impl IP<Data> for SchnorrDLProver {
     fn execute(&self, ch: Channel<Data>, log: Log) {
-    	let mut rng = rand::thread_rng();
+        let mut rng = rand::thread_rng();
 
-    	// message 1
+        // message 1
 
-    	let r: F = F::rand(&mut rng);
-    	log.write(format!("P picks random exponent r = {r} from F"));
+        let r: F = F::rand(&mut rng);
+        log.write(format!("P picks random exponent r = {r} from F"));
 
-    	let a = *self.g * r;
-    	log.write(format!("P computes a = g^r = {a}"));
+        let a = *self.g * r;
+        log.write(format!("P computes a = g^r = {a}"));
 
-    	log.write(format!("P -> a"));
-    	ch.send( Data::GroupElement(a) );
+        log.write(format!("P -> a"));
+        ch.send( Data::GroupElement(a) );
 
-    	// wait for verifier response
+        // wait for verifier response
 
-    	let e = ch.receive().to_scalar().unwrap();
+        let e = ch.receive().to_scalar().unwrap();
 
-    	// message 2
+        // message 2
 
-    	let z = *self.w * e + r;
-    	log.write(format!("P computes exponent z = w*e + r = {z}"));
+        let z = *self.w * e + r;
+        log.write(format!("P computes exponent z = w*e + r = {z}"));
 
-    	log.write(format!("P -> z"));
-    	ch.send( Data::Scalar(z) );
+        log.write(format!("P -> z"));
+        ch.send( Data::Scalar(z) );
 
-		// execution complete
+        // execution complete
     }
 }
 
 
 struct SchnorrDLVerifier {
-	g: Arc< G >,
-	h: Arc< G >,
+    g: Arc< G >,
+    h: Arc< G >,
 }
 
 impl IP<Data> for SchnorrDLVerifier {
-	fn execute(&self, ch: Channel<Data>, log: Log) {
-		let mut rng = rand::thread_rng();
+    fn execute(&self, ch: Channel<Data>, log: Log) {
+        let mut rng = rand::thread_rng();
 
-		// wait for Prover message
+        // wait for Prover message
 
-		let a = ch.receive().to_group_element().unwrap();
+        let a = ch.receive().to_group_element().unwrap();
 
-		// message 1
+        // message 1
 
-		let e: F = F::rand(&mut rng);
-		log.write(format!("V picks random exponent e = {e} from F"));
+        let e: F = F::rand(&mut rng);
+        log.write(format!("V picks random exponent e = {e} from F"));
 
-		log.write(format!("V -> e"));
-		ch.send( Data::Scalar(e) );
+        log.write(format!("V -> e"));
+        ch.send( Data::Scalar(e) );
 
-		// wait for Prover response
+        // wait for Prover response
 
-		let z = ch.receive().to_scalar().unwrap();
+        let z = ch.receive().to_scalar().unwrap();
 
-		// compute decision
+        // compute decision
 
-		log.write(format!("V checks that a*h^e == g^z"));
-		let decision = a + *self.h * e == *self.g * z;
+        log.write(format!("V checks that a*h^e == g^z"));
+        let decision = a + *self.h * e == *self.g * z;
 
-		let data = Data::Decision(decision);
-		log.write(format!("V -> {data}"));
-		ch.send( data );
+        let data = Data::Decision(decision);
+        log.write(format!("V -> {data}"));
+        ch.send( data );
 
-		// execution complete
-	}
+        // execution complete
+    }
 }
 
 

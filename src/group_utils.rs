@@ -8,33 +8,33 @@ use ark_std::Zero;
 
 /// Produces a Vec containing n distinct generators chosen uniformly from G
 pub fn rand_gens<G: Group>(n: usize, rng: &mut impl Rng) -> Vec<G> {
-	let mut gens: Vec<G> = Vec::with_capacity(n);
-	while gens.len() < n {
-		let g = G::rand(rng); // produces a random non-identity element
-		if gens.iter().all(|&h| h != g) {
-			gens.push(g)
-		}
-	}
-	gens
+    let mut gens: Vec<G> = Vec::with_capacity(n);
+    while gens.len() < n {
+        let g = G::rand(rng); // produces a random non-identity element
+        if gens.iter().all(|&h| h != g) {
+            gens.push(g)
+        }
+    }
+    gens
 }
 
 /// Computes the multi-scalar multiplication of the given elements with given
 ///  produced by raising the given list of generators
 pub fn msm<E, S>(elts: &[E], scalars: &[S]) -> E where
-	E: Zero + Add<E, Output=E> + Mul<S, Output=E> + Copy,
-	S: Copy,
+    E: Zero + Add<E, Output=E> + Mul<S, Output=E> + Copy,
+    S: Copy,
 {
-	elts.iter().zip(scalars.iter())
-		.map(|(&x, &y)| x * y)
-		.fold(E::zero(), |acc, x| acc + x)
-	// TODO implement a more efficient algorithm like Pippenger
+    elts.iter().zip(scalars.iter())
+        .map(|(&x, &y)| x * y)
+        .fold(E::zero(), |acc, x| acc + x)
+    // TODO implement a more efficient algorithm like Pippenger
 }
 
 pub fn list_vec<T: fmt::Display>(vec: &[T], sep: &str) -> String {
-	vec.iter()
-		.map(|x| x.to_string())
-		.collect::<Vec<_>>()
-		.join(sep)
+    vec.iter()
+        .map(|x| x.to_string())
+        .collect::<Vec<_>>()
+        .join(sep)
 }
 
 
@@ -46,7 +46,7 @@ mod tests {
     use crate::small_curves::C17Projective as G;
     use crate::small_fields::F17 as ScalarField;
 
-	#[test]
+    #[test]
     fn test_multi_exponent() {
         let mut rng = rand::thread_rng();
         let n: usize = 3;
@@ -66,18 +66,18 @@ mod tests {
 
     #[test]
     fn test_gens() {
-    	let mut rng = rand::thread_rng();
+        let mut rng = rand::thread_rng();
         let n: usize = 8;
 
         let gens: Vec<G> = rand_gens(n, &mut rng);
 
         for i in 0..n {
-        	// generators must be non-identity elements
-        	assert_ne!(gens[i], G::zero());
-    		// list entries must be distinct
-        	for j in 0..i {
-        		assert_ne!(gens[i], gens[j]);
-        	}
+            // generators must be non-identity elements
+            assert_ne!(gens[i], G::zero());
+            // list entries must be distinct
+            for j in 0..i {
+                assert_ne!(gens[i], gens[j]);
+            }
         }
     }
 }
