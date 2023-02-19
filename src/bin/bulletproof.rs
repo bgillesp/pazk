@@ -59,18 +59,11 @@ fn main() {
 	let com_u = group_utils::msm(&gens, &poly_coeffs);
 	println!("  C_u = Com(u) = {com_u}");
 
-	// println!("Computing generalized Pedersen commitment for polynomial evaluation");
-	// let com_v = (gens.scalar_gen * evaluation);
-	// println!("  C_v = Com(v, r_v) = {com_v}");
-
     let gens = Arc::new(gens);
     let public_vector = Arc::new(monoms);
     let public_ip = Arc::new(evaluation);
 	let coeffs = Arc::new(poly_coeffs);
-	// let coeffs_blinding_factor = Arc::new(rand_u);
 	let coeffs_commitment = Arc::new(com_u);
-	// let ip_blinding_factor = Arc::new(rand_v);
-	// let ip_commitment = Arc::new(com_v);
 
 	println!();
 	println!("Constructing prover with: (g_i), y; u");
