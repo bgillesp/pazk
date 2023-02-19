@@ -63,7 +63,7 @@ fn main() {
 	let evaluation: F = iter::zip(poly_coeffs.iter(), monoms.iter())
 		.map(|(a, y)| a*y)
 		.sum();
-	println!("Computing evaluation v = <u, y> of polynomial at z: {evaluation}");
+	println!("Computing evaluation v = <u,y> of polynomial at z: {evaluation}");
 
 	// compute generalized Pedersen commitments and blinding coefficients
 
@@ -71,13 +71,13 @@ fn main() {
 	let rand_u = F::rand(&mut rng);
 	let com_u = group_utils::msm(&gens.vector_gens, &poly_coeffs)
 		+ (gens.blinding_gen * rand_u);
-	println!("  r_u = {rand_u}; C_u = Com(u, r_u) = {com_u}");
+	println!("  r_u = {rand_u}; C_u = Com(u,r_u) = {com_u}");
 
 	println!("Computing generalized Pedersen commitment for polynomial evaluation");
 	let rand_v = F::rand(&mut rng);
 	let com_v = (gens.scalar_gen * evaluation)
 		+ (gens.blinding_gen * rand_v);
-	println!("  r_v = {rand_v}; C_v = Com(v, r_v) = {com_v}");
+	println!("  r_v = {rand_v}; C_v = Com(v,r_v) = {com_v}");
 
     let gens = Arc::new(gens);
     let public_vector = Arc::new(monoms);
@@ -256,7 +256,7 @@ impl IP<Data> for PedersenVerifier {
 		let decision = com_rc == com_rc_computed && com_rc_ip == com_rc_ip_computed;
 
 		let data = Data::Decision(decision);
-		log.write(format!("V --> ({})", data));
+		log.write(format!("V -> ({})", data));
 		ch.send( data );
 
 		// execution complete
