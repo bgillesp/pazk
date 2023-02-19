@@ -8,10 +8,11 @@ This repository contains implementations for a selection of zero-knowledge and v
 
 Currently the repository includes the following implementations:
 
-* The multivariate [sum-check protocol](https://github.com/bgillesp/pazk/blob/main/src/bin/sum_check.rs) for proving that the sum over an exponentially-sized domain of a multivariate polynomial function is a given value
-* [Freivalds' algorithm](https://github.com/bgillesp/pazk/blob/main/src/bin/freivald.rs) for efficient randomized verification of matrix products
-* A non-succinct zero-knowledge protocol for [inner product relations](https://github.com/bgillesp/pazk/blob/main/src/bin/pedersen_poly_commitment.rs) of Pedersen commitments (Protocol 11)
-* The [Bulletproofs protocol](https://github.com/bgillesp/pazk/blob/main/src/bin/bulletproof.rs) for inner product relations, requiring only logarithmic communication complexity using recursive folding (Protocol 13)
+* The multivariate [sum-check protocol](https://github.com/bgillesp/pazk/blob/main/src/bin/sum_check.rs) for proving that the sum over an exponentially-sized domain of a multivariate polynomial function is a given value (Section 4.1)
+* [Freivalds' algorithm](https://github.com/bgillesp/pazk/blob/main/src/bin/freivald.rs) for efficient randomized verification of matrix products (Section 2.2)
+* [Schnorr's protocol](https://github.com/bgillesp/pazk/blob/main/src/bin/schnorr-dl.rs) for knowledge of discrete logarithms (Protocol 3, Section 12.2)
+* A non-succinct zero-knowledge protocol for [inner product relations](https://github.com/bgillesp/pazk/blob/main/src/bin/pedersen_poly_commitment.rs) of Pedersen commitments (Protocol 11, Section 14.2)
+* The [Bulletproofs protocol](https://github.com/bgillesp/pazk/blob/main/src/bin/bulletproof.rs) for inner product relations, requiring only logarithmic communication complexity using recursive folding (Protocol 13, Section 14.4)
 * [Small finite fields](https://github.com/bgillesp/pazk/blob/main/src/small_fields.rs) and [small elliptic curve groups](https://github.com/bgillesp/pazk/blob/main/src/small_curves.rs) implemented using the Arkworks algebra backend, to allow for protocol transcripts which are easier to follow
 * A simple framework for threaded execution of 2-party [interactive proof protocols](https://github.com/bgillesp/pazk/blob/main/src/ip.rs)
 
